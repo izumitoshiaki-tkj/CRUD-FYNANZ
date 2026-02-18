@@ -69,6 +69,27 @@
             color: var(--text-primary);
         }
 
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 12px;
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        .footer span {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
         /* Auth Container */
         .auth-container {
             width: 100%;
@@ -81,6 +102,7 @@
             padding: 40px;
             box-shadow: 0 25px 50px -12px var(--shadow-color);
             animation: authSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 60px;
         }
 
         @keyframes authSlideUp {
@@ -396,61 +418,6 @@
             box-shadow: 0 20px 30px -10px var(--accent-secondary);
         }
 
-        /* Social Login - Hidden but kept for structure */
-        .social-login {
-            margin-top: 32px;
-            text-align: center;
-            display: none;
-        }
-
-        .social-login p {
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .social-login p::before,
-        .social-login p::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            width: 30%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
-        }
-
-        .social-login p::before { left: 0; }
-        .social-login p::after { right: 0; }
-
-        .social-buttons {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-        }
-
-        .social-btn {
-            width: 60px;
-            height: 60px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: var(--text-secondary);
-            font-size: 24px;
-        }
-
-        .social-btn:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 15px 30px -10px var(--accent-secondary);
-        }
-
         /* Terms */
         .terms {
             display: flex;
@@ -481,7 +448,7 @@
         .main-container {
             display: none;
             max-width: 1600px;
-            margin: 0 auto;
+            margin: 0 auto 60px;
             background: var(--container-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -611,7 +578,6 @@
         .avatar {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
             border-radius: 30px;
             display: flex;
             align-items: center;
@@ -620,14 +586,17 @@
             font-weight: 700;
             font-size: 18px;
             box-shadow: 0 10px 20px -5px var(--accent-secondary);
-            object-fit: cover;
+            overflow: hidden;
         }
 
         .avatar img {
             width: 100%;
             height: 100%;
-            border-radius: 30px;
             object-fit: cover;
+        }
+
+        .avatar.default {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         }
 
         .profile-info {
@@ -656,7 +625,7 @@
             color: var(--accent-primary);
         }
 
-        /* Profile Dropdown Menu - FIXED ALIGNMENT */
+        /* Profile Dropdown Menu */
         .profile-menu {
             position: absolute;
             top: calc(100% + 16px);
@@ -694,7 +663,6 @@
         .menu-avatar {
             width: 56px;
             height: 56px;
-            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -703,6 +671,10 @@
             font-weight: 700;
             font-size: 24px;
             overflow: hidden;
+        }
+
+        .menu-avatar.default {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         }
 
         .menu-avatar img {
@@ -1056,7 +1028,7 @@
             font-size: 13px;
         }
 
-        /* Calculator Section - FIXED FOR MOBILE */
+        /* Calculator Section */
         .calculator-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -1270,7 +1242,7 @@
             font-weight: 700;
         }
 
-        /* Filter Section - FIXED FOR MOBILE */
+        /* Filter Section */
         .filter-section {
             display: flex;
             gap: 12px;
@@ -1290,7 +1262,6 @@
             flex: 1;
         }
 
-        /* Hide search on mobile */
         .search-wrapper {
             display: flex;
             flex: 2;
@@ -1457,7 +1428,6 @@
         .avatar-preview {
             width: 100px;
             height: 100px;
-            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
             border-radius: 30px;
             display: flex;
             align-items: center;
@@ -1469,6 +1439,10 @@
             position: relative;
             cursor: pointer;
             transition: all 0.3s;
+        }
+
+        .avatar-preview.default {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
         }
 
         .avatar-preview:hover::after {
@@ -1535,6 +1509,27 @@
             box-shadow: 0 10px 20px -10px var(--accent-secondary);
         }
 
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 16px;
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        .footer span {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .auth-container {
@@ -1542,7 +1537,7 @@
             }
 
             .main-container {
-                padding: 16px;
+                padding: 20px;
             }
 
             .app-header {
@@ -1590,6 +1585,11 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            .footer {
+                padding: 12px;
+                font-size: 12px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1600,6 +1600,7 @@
             .main-container {
                 padding: 12px;
                 border-radius: 24px;
+                margin-bottom: 50px;
             }
 
             .app-logo {
@@ -1624,7 +1625,6 @@
                 font-size: 11px;
             }
 
-            /* Calculator - FIXED FOR MOBILE */
             .calculator-section {
                 padding: 16px;
             }
@@ -1648,7 +1648,6 @@
                 font-size: 14px;
             }
 
-            /* Input section */
             .input-section {
                 padding: 16px;
                 gap: 16px;
@@ -1670,7 +1669,6 @@
                 font-size: 12px;
             }
 
-            /* Summary cards */
             .summary-grid {
                 gap: 12px;
             }
@@ -1693,7 +1691,6 @@
                 font-size: 18px;
             }
 
-            /* Filter section - HIDE SEARCH ON MOBILE */
             .filter-section {
                 gap: 10px;
             }
@@ -1705,10 +1702,9 @@
             }
 
             .search-wrapper {
-                display: none; /* Hide search on mobile */
+                display: none;
             }
 
-            /* Number input controls */
             .input-wrapper.number-input input[type="number"] {
                 padding-right: 60px;
             }
@@ -1722,7 +1718,6 @@
                 height: 20px;
             }
 
-            /* Table */
             .table-container {
                 border-radius: 20px;
             }
@@ -1742,7 +1737,6 @@
                 font-size: 11px;
             }
 
-            /* Profile menu */
             .profile-menu {
                 width: 100%;
                 padding: 16px;
@@ -1763,12 +1757,22 @@
             .menu-item .value {
                 font-size: 11px;
             }
+
+            .footer {
+                padding: 10px;
+                font-size: 11px;
+            }
         }
     </style>
     <!-- Cropper.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 </head>
 <body class="dark-theme">
+    <!-- Footer -->
+    <div class="footer">
+        © 2024 <span>Izumi Toshiaki</span> | Premium Finance Tracker
+    </div>
+
     <!-- Auth Container -->
     <div class="auth-container" id="authContainer">
         <div class="auth-header">
@@ -1874,7 +1878,7 @@
             <!-- Profile Section -->
             <div class="profile-section">
                 <div class="profile-trigger" onclick="toggleProfileMenu()">
-                    <div class="avatar" id="userAvatar">
+                    <div class="avatar default" id="userAvatar">
                         <span id="avatarText">JS</span>
                     </div>
                     <div class="profile-info">
@@ -1884,10 +1888,10 @@
                     <i class="fas fa-chevron-down" id="profileArrow"></i>
                 </div>
 
-                <!-- Profile Dropdown Menu - FIXED -->
+                <!-- Profile Dropdown Menu -->
                 <div class="profile-menu" id="profileMenu">
                     <div class="menu-header">
-                        <div class="menu-avatar" id="menuAvatar">
+                        <div class="menu-avatar default" id="menuAvatar">
                             <span id="menuAvatarText">JS</span>
                         </div>
                         <div class="menu-info">
@@ -1964,7 +1968,7 @@
         <!-- Messages -->
         <div class="message" id="appMessage"></div>
 
-        <!-- Calculator - FIXED -->
+        <!-- Calculator -->
         <div class="calculator-section">
             <div class="calculator-display" id="calcDisplay">0</div>
             <div class="calculator-buttons">
@@ -2101,7 +2105,7 @@
             </div>
         </div>
 
-        <!-- Filter Section - FIXED: Search hidden on mobile -->
+        <!-- Filter Section -->
         <div class="filter-section">
             <select class="filter-select" id="typeFilter" onchange="filterRecords()">
                 <option value="all" data-i18n="filter.all">All transactions</option>
@@ -2150,7 +2154,7 @@
             </div>
             <div class="profile-edit-form">
                 <div class="avatar-upload">
-                    <div class="avatar-preview" id="profileAvatar" onclick="document.getElementById('avatarInput').click()">
+                    <div class="avatar-preview default" id="profileAvatar" onclick="document.getElementById('avatarInput').click()">
                         <span id="profileAvatarText">JS</span>
                     </div>
                     <button class="upload-btn" onclick="document.getElementById('avatarInput').click()">
@@ -2318,7 +2322,7 @@
             { code: 'ko', name: 'Korean', native: '한국어', flag: '🇰🇷' }
         ];
 
-        // Translations (keeping only English for brevity, but full translations exist in original code)
+        // Translations (keeping only English for brevity)
         const translations = {
             en: {
                 'auth.subtitle': 'Premium financial intelligence',
@@ -2326,7 +2330,6 @@
                 'auth.signup': 'Create Account',
                 'auth.email': 'Email address',
                 'auth.password': 'Password',
-                'auth.continue-with': 'Continue with',
                 'auth.fullname': 'Full name',
                 'auth.confirm-password': 'Confirm password',
                 'auth.enter-password': 'Enter a password',
@@ -2442,7 +2445,7 @@
             }
         });
 
-        // Cropper Functions
+        // Cropper Functions - FIXED
         function openCropModal(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -2486,6 +2489,63 @@
             }
         }
 
+        // FIXED: Update all avatars properly
+        function updateAllAvatars(imageUrl) {
+            // Update header avatar
+            const userAvatar = document.getElementById('userAvatar');
+            userAvatar.innerHTML = `<img src="${imageUrl}" alt="Avatar">`;
+            userAvatar.classList.remove('default');
+            
+            // Update menu avatar
+            const menuAvatar = document.getElementById('menuAvatar');
+            menuAvatar.innerHTML = `<img src="${imageUrl}" alt="Avatar">`;
+            menuAvatar.classList.remove('default');
+            
+            // Update profile modal avatar
+            const profileAvatar = document.getElementById('profileAvatar');
+            profileAvatar.innerHTML = `<img src="${imageUrl}" alt="Avatar">`;
+            profileAvatar.classList.remove('default');
+            
+            // Hide all text spans
+            document.getElementById('avatarText').style.display = 'none';
+            document.getElementById('menuAvatarText').style.display = 'none';
+            document.getElementById('profileAvatarText').style.display = 'none';
+        }
+
+        // FIXED: Reset to default initials
+        function resetToDefaultAvatar() {
+            if (!currentUser) return;
+            
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            
+            // Update header avatar
+            const userAvatar = document.getElementById('userAvatar');
+            userAvatar.innerHTML = `<span id="avatarText">${initials}</span>`;
+            userAvatar.classList.add('default');
+            
+            // Update menu avatar
+            const menuAvatar = document.getElementById('menuAvatar');
+            menuAvatar.innerHTML = `<span id="menuAvatarText">${initials}</span>`;
+            menuAvatar.classList.add('default');
+            
+            // Update profile modal avatar
+            const profileAvatar = document.getElementById('profileAvatar');
+            profileAvatar.innerHTML = `<span id="profileAvatarText">${initials}</span>`;
+            profileAvatar.classList.add('default');
+        }
+
+        // FIXED: Load existing avatar on startup
+        function loadUserAvatar() {
+            if (!currentUser) return;
+            
+            if (currentUser.photoURL) {
+                updateAllAvatars(currentUser.photoURL);
+            } else {
+                resetToDefaultAvatar();
+            }
+        }
+
+        // FIXED: Crop and save function
         function cropAndSave() {
             if (!cropper) return;
 
@@ -2498,15 +2558,8 @@
 
             const croppedImage = canvas.toDataURL('image/jpeg', 0.9);
             
-            // Update all avatar elements
-            document.getElementById('profileAvatar').innerHTML = `<img src="${croppedImage}" alt="Avatar">`;
-            document.getElementById('userAvatar').innerHTML = `<img src="${croppedImage}" alt="Avatar">`;
-            document.getElementById('menuAvatar').innerHTML = `<img src="${croppedImage}" alt="Avatar">`;
-            
-            // Hide the text spans
-            document.getElementById('avatarText').style.display = 'none';
-            document.getElementById('menuAvatarText').style.display = 'none';
-            document.getElementById('profileAvatarText').style.display = 'none';
+            // Update all avatars
+            updateAllAvatars(croppedImage);
             
             if (currentUser) {
                 currentUser.photoURL = croppedImage;
@@ -2601,12 +2654,12 @@
                 document.getElementById('profileLastName').value = nameParts.slice(1).join(' ') || '';
                 document.getElementById('profileEmail').value = currentUser.email;
                 
+                // Load current avatar in modal
                 if (currentUser.photoURL) {
-                    document.getElementById('profileAvatar').innerHTML = `<img src="${currentUser.photoURL}" alt="Avatar">`;
+                    const profileAvatar = document.getElementById('profileAvatar');
+                    profileAvatar.innerHTML = `<img src="${currentUser.photoURL}" alt="Avatar">`;
+                    profileAvatar.classList.remove('default');
                     document.getElementById('profileAvatarText').style.display = 'none';
-                } else {
-                    const initials = (nameParts[0]?.[0] || '') + (nameParts[1]?.[0] || '');
-                    document.getElementById('profileAvatar').innerHTML = `<span id="profileAvatarText">${initials}</span>`;
                 }
             }
             openModal('profileModal');
@@ -2629,10 +2682,9 @@
                 
                 updateWelcomeMessage();
                 
+                // If no photo, update initials
                 if (!currentUser.photoURL) {
-                    const initials = (firstName[0] || '') + (lastName[0] || '');
-                    document.getElementById('userAvatar').innerHTML = `<span id="avatarText">${initials}</span>`;
-                    document.getElementById('menuAvatar').innerHTML = `<span id="menuAvatarText">${initials}</span>`;
+                    resetToDefaultAvatar();
                 }
 
                 const userIndex = users.findIndex(u => u.id === currentUser.id);
@@ -2681,6 +2733,7 @@
             if (user) {
                 records = user.records || [];
                 showMainApp();
+                loadUserAvatar(); // Load avatar after showing main app
             }
         }
 
@@ -2824,6 +2877,7 @@
             
             records = [];
             showMainApp();
+            resetToDefaultAvatar(); // Set default avatar
             showAppMessage('success', 'Account created successfully!');
         }
 
@@ -2852,6 +2906,7 @@
                 
                 records = user.records || [];
                 showMainApp();
+                loadUserAvatar(); // Load user's avatar
                 showAppMessage('success', 'Login successful!');
             } else {
                 showError('loginEmailError', 'Invalid email or password');
@@ -2897,17 +2952,6 @@
                 document.getElementById('menuEmail').textContent = currentUser.email;
                 
                 updateWelcomeMessage();
-                
-                if (currentUser.photoURL) {
-                    document.getElementById('userAvatar').innerHTML = `<img src="${currentUser.photoURL}" alt="Avatar">`;
-                    document.getElementById('menuAvatar').innerHTML = `<img src="${currentUser.photoURL}" alt="Avatar">`;
-                    document.getElementById('avatarText').style.display = 'none';
-                    document.getElementById('menuAvatarText').style.display = 'none';
-                } else {
-                    const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
-                    document.getElementById('userAvatar').innerHTML = `<span id="avatarText">${initials.slice(0, 2)}</span>`;
-                    document.getElementById('menuAvatar').innerHTML = `<span id="menuAvatarText">${initials.slice(0, 2)}</span>`;
-                }
             }
             
             updateDateTime();
