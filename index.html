@@ -1,0 +1,3355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>FYNANZ | Premium Finance Tracker</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, border-color 0.3s, color 0.2s;
+        }
+
+        /* Dark Theme Variables */
+        body.dark-theme {
+            --bg-gradient-start: #0b1120;
+            --bg-gradient-end: #1a2639;
+            --container-bg: rgba(30, 41, 59, 0.95);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(51, 65, 85, 0.4);
+            --card-bg: rgba(51, 65, 85, 0.3);
+            --hover-bg: rgba(56, 189, 248, 0.1);
+            --accent-primary: #38bdf8;
+            --accent-secondary: #0284c7;
+            --income-color: #10b981;
+            --expense-color: #ef4444;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --welcome-bg: rgba(56, 189, 248, 0.15);
+        }
+
+        /* Light Theme Variables */
+        body.light-theme {
+            --bg-gradient-start: #f0f9ff;
+            --bg-gradient-end: #e0f2fe;
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --input-bg: rgba(241, 245, 249, 0.8);
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --hover-bg: rgba(56, 189, 248, 0.05);
+            --accent-primary: #0284c7;
+            --accent-secondary: #38bdf8;
+            --income-color: #059669;
+            --expense-color: #dc2626;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --welcome-bg: rgba(2, 132, 199, 0.1);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            color: var(--text-primary);
+        }
+
+        /* Auth Container */
+        .auth-container {
+            width: 100%;
+            max-width: 460px;
+            background: var(--container-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 32px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px var(--shadow-color);
+            animation: authSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes authSlideUp {
+            0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { filter: drop-shadow(0 0 20px var(--accent-primary)); }
+            50% { filter: drop-shadow(0 0 30px var(--accent-secondary)); }
+        }
+
+        .auth-header p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Toggle Buttons */
+        .auth-toggle {
+            display: flex;
+            gap: 8px;
+            background: var(--input-bg);
+            padding: 4px;
+            border-radius: 40px;
+            margin-bottom: 32px;
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-toggle-btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 36px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .auth-toggle-btn.active {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            color: white;
+            box-shadow: 0 10px 20px -10px var(--accent-secondary);
+        }
+
+        /* Forms */
+        .auth-form {
+            display: none;
+            animation: formFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            color: var(--text-muted);
+            font-size: 16px;
+            transition: color 0.3s;
+            z-index: 1;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select,
+        .input-wrapper textarea {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 15px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+
+        .input-wrapper textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper select:focus,
+        .input-wrapper textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: var(--card-bg);
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
+        }
+
+        .input-wrapper input:focus + i,
+        .input-wrapper select:focus + i,
+        .input-wrapper textarea:focus + i {
+            color: var(--accent-primary);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            left: auto !important;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .toggle-password:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Professional Number Input Styling */
+        .input-wrapper.number-input {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper.number-input input[type="number"] {
+            -moz-appearance: textfield;
+            padding-right: 80px;
+            width: 100%;
+        }
+
+        .input-wrapper.number-input input[type="number"]::-webkit-outer-spin-button,
+        .input-wrapper.number-input input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .number-controls {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            opacity: 0;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 3px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .input-wrapper.number-input:hover .number-controls,
+        .input-wrapper.number-input:focus-within .number-controls {
+            opacity: 1;
+        }
+
+        .number-controls button {
+            background: transparent;
+            border: none;
+            width: 28px;
+            height: 26px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 12px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .number-controls button:hover {
+            background: var(--accent-primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .number-controls button:active {
+            transform: scale(0.95);
+        }
+
+        .number-controls button i {
+            position: static !important;
+            font-size: 12px;
+            color: inherit;
+        }
+
+        /* Dark theme specific */
+        .dark-theme .number-controls {
+            background: rgba(30, 41, 59, 0.95);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Light theme specific */
+        .light-theme .number-controls {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Animation for the controls */
+        @keyframes slideInControls {
+            from {
+                opacity: 0;
+                transform: translateY(-50%) translateX(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+            }
+        }
+
+        .input-wrapper.number-input:hover .number-controls {
+            animation: slideInControls 0.2s ease-out;
+        }
+
+        /* Password Strength */
+        .password-strength {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--input-bg);
+            border-radius: 16px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .strength-bar-fill {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981, var(--accent-primary));
+        }
+
+        .strength-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Auth Button */
+        .auth-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .auth-btn:hover::before {
+            left: 100%;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 30px -10px var(--accent-secondary);
+        }
+
+        /* Social Login - Hidden but kept for structure */
+        .social-login {
+            margin-top: 32px;
+            text-align: center;
+            display: none;
+        }
+
+        .social-login p {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .social-login p::before,
+        .social-login p::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 30%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        }
+
+        .social-login p::before { left: 0; }
+        .social-login p::after { right: 0; }
+
+        .social-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .social-btn {
+            width: 60px;
+            height: 60px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-secondary);
+            font-size: 24px;
+        }
+
+        .social-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 15px 30px -10px var(--accent-secondary);
+        }
+
+        /* Terms */
+        .terms {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .terms input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-primary);
+        }
+
+        .terms a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+
+        /* Main App Container */
+        .main-container {
+            display: none;
+            max-width: 1600px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px var(--shadow-color);
+            width: 100%;
+            animation: appReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes appReveal {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Header with Profile Menu */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .app-logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            background: var(--welcome-bg);
+            border: 1px solid var(--accent-primary);
+            border-radius: 20px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-message-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .welcome-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .welcome-text h2 {
+            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .welcome-text p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .welcome-email-badge {
+            background: var(--accent-primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            position: relative;
+        }
+
+        .profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 16px 8px 8px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            transition: all 0.3s;
+        }
+
+        .profile-trigger:hover {
+            background: var(--card-bg);
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 10px 20px -5px var(--accent-secondary);
+            object-fit: cover;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 30px;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            text-align: left;
+        }
+
+        .profile-info h4 {
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .profile-info p {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .profile-trigger i {
+            color: var(--text-muted);
+            font-size: 14px;
+            transition: transform 0.3s;
+        }
+
+        .profile-trigger:hover i {
+            color: var(--accent-primary);
+        }
+
+        /* Profile Dropdown Menu */
+        .profile-menu {
+            position: absolute;
+            top: calc(100% + 16px);
+            right: 0;
+            width: 340px;
+            background: var(--container-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 24px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 30px 60px -15px var(--shadow-color);
+            z-index: 1000;
+        }
+
+        .profile-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+
+        .menu-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 28px;
+            overflow: hidden;
+        }
+
+        .menu-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .menu-info h3 {
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .menu-info p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .menu-section {
+            margin-bottom: 16px;
+        }
+
+        .menu-section-title {
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            padding-left: 16px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+        }
+
+        .menu-item:hover {
+            background: var(--hover-bg);
+            color: var(--accent-primary);
+            transform: translateX(5px);
+        }
+
+        .menu-item i {
+            width: 24px;
+            font-size: 18px;
+        }
+
+        .menu-item span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .menu-item .value {
+            margin-left: auto;
+            color: var(--accent-primary);
+            font-size: 13px;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 16px 0;
+        }
+
+        .logout-menu-item {
+            color: var(--expense-color);
+        }
+
+        .logout-menu-item:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--expense-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: modalFade 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 32px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalSlide 0.4s;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Cropper Modal */
+        .cropper-modal {
+            max-width: 600px;
+        }
+
+        .cropper-container {
+            max-height: 400px;
+            margin-bottom: 20px;
+            background: #000;
+        }
+
+        .cropper-preview {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .preview-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--accent-primary);
+        }
+
+        .preview-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cropper-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .cropper-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cropper-btn.cancel {
+            background: var(--input-bg);
+            color: var(--text-secondary);
+        }
+
+        .cropper-btn.save {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .cropper-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Option Lists */
+        .option-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-item:hover {
+            border-color: var(--accent-primary);
+            transform: translateX(3px);
+        }
+
+        .option-item.selected {
+            border-color: var(--accent-primary);
+            background: var(--hover-bg);
+        }
+
+        .option-item .flag {
+            font-size: 20px;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .option-item .currency-symbol {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--accent-primary);
+            min-width: 35px;
+            text-align: right;
+        }
+
+        .option-item .currency-name {
+            flex: 1;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .option-item .language-name {
+            flex: 1;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .option-item .language-native {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        .option-item .check {
+            color: var(--accent-primary);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            min-width: 18px;
+            text-align: right;
+        }
+
+        .option-item.selected .check {
+            opacity: 1;
+        }
+
+        /* Date Section */
+        .date-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .date-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, var(--accent-primary), transparent);
+            opacity: 0.05;
+            animation: rotateGlow 20s linear infinite;
+        }
+
+        @keyframes rotateGlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .date-display {
+            font-size: 16px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .date-display i {
+            color: var(--accent-primary);
+            font-size: 20px;
+        }
+
+        .date-display strong {
+            color: var(--text-primary);
+            font-weight: 600;
+            background: var(--input-bg);
+            padding: 4px 10px;
+            border-radius: 40px;
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .calculator-display {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 24px;
+            margin-bottom: 20px;
+            text-align: right;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: monospace;
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .calc-btn {
+            padding: 20px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calc-btn:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .calc-btn.operator {
+            background: var(--hover-bg);
+            color: var(--accent-primary);
+        }
+
+        .calc-btn.equals {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            color: white;
+            border: none;
+        }
+
+        .calc-btn.clear {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--expense-color);
+        }
+
+        /* Input Section */
+        .input-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 32px;
+            margin-bottom: 32px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .type-selector {
+            display: flex;
+            gap: 12px;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }
+
+        .type-btn.active {
+            background: var(--income-color);
+            color: white;
+            border-color: var(--income-color);
+        }
+
+        .type-btn.income.active {
+            background: var(--income-color);
+        }
+
+        .type-btn.expense.active {
+            background: var(--expense-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            grid-column: 1 / -1;
+            margin-top: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--income-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--accent-secondary);
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 20px 30px -10px var(--accent-secondary);
+        }
+
+        .card-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--input-bg);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .card-icon.income { color: var(--income-color); }
+        .card-icon.expense { color: var(--expense-color); }
+        .card-icon.balance { color: var(--accent-primary); }
+
+        .card-content h3 {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .card-content .amount {
+            color: var(--text-primary);
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 14px 24px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-primary);
+            min-width: 200px;
+            cursor: pointer;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        /* Table */
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th {
+            text-align: left;
+            padding: 20px 24px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--hover-bg);
+        }
+
+        .type-badge {
+            padding: 8px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .type-badge.income {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--income-color);
+        }
+
+        .type-badge.expense {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--expense-color);
+        }
+
+        .action-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 4px;
+            background: var(--input-bg);
+            color: var(--text-secondary);
+        }
+
+        .edit-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: var(--expense-color);
+            color: white;
+        }
+
+        /* Messages */
+        .message {
+            padding: 16px 24px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--income-color);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: flex;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--expense-color);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            display: flex;
+        }
+
+        .message i {
+            font-size: 18px;
+        }
+
+        /* Profile Edit Form */
+        .profile-edit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .avatar-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 42px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .avatar-preview:hover::after {
+            content: '\f030';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-btn {
+            padding: 12px 24px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .save-btn {
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--accent-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auth-container {
+                padding: 24px;
+            }
+
+            .main-container {
+                padding: 20px;
+            }
+
+            .app-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .profile-section {
+                width: 100%;
+            }
+
+            .profile-trigger {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .profile-menu {
+                width: 100%;
+                right: 0;
+            }
+
+            .summary-card {
+                padding: 20px;
+            }
+
+            .card-content .amount {
+                font-size: 24px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-message {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .social-buttons {
+                gap: 12px;
+            }
+
+            .social-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .calculator-buttons {
+                gap: 8px;
+            }
+
+            .calc-btn {
+                padding: 16px;
+            }
+
+            .input-wrapper.number-input input[type="number"] {
+                padding-right: 70px;
+            }
+            
+            .number-controls {
+                right: 8px;
+            }
+            
+            .number-controls button {
+                width: 24px;
+                height: 22px;
+            }
+        }
+    </style>
+    <!-- Cropper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+</head>
+<body class="dark-theme">
+    <!-- Auth Container -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-header">
+            <div class="logo">FYNANZ</div>
+            <p data-i18n="auth.subtitle">Premium financial intelligence</p>
+        </div>
+
+        <!-- Toggle Buttons -->
+        <div class="auth-toggle">
+            <button class="auth-toggle-btn active" id="loginToggleBtn" onclick="showLoginForm()" data-i18n="auth.signin">Sign In</button>
+            <button class="auth-toggle-btn" id="signupToggleBtn" onclick="showSignupForm()" data-i18n="auth.signup">Create Account</button>
+        </div>
+
+        <!-- Login Form -->
+        <div class="auth-form active" id="loginForm">
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label data-i18n="auth.email">Email address</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-envelope"></i>
+                        <input type="email" id="loginEmail" placeholder="you@example.com" required>
+                    </div>
+                    <div class="error-message" id="loginEmailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="auth.password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        <i class="far fa-eye toggle-password" onclick="togglePassword('loginPassword')"></i>
+                    </div>
+                    <div class="error-message" id="loginPasswordError"></div>
+                </div>
+
+                <button type="submit" class="auth-btn" data-i18n="auth.signin">Sign In</button>
+            </form>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div class="auth-form" id="signupForm">
+            <form onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label data-i18n="auth.fullname">Full name</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-user"></i>
+                        <input type="text" id="signupName" placeholder="John Smith" required>
+                    </div>
+                    <div class="error-message" id="signupNameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="auth.email">Email address</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-envelope"></i>
+                        <input type="email" id="signupEmail" placeholder="you@example.com" required>
+                    </div>
+                    <div class="error-message" id="signupEmailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="auth.password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signupPassword" placeholder="Create password" required onkeyup="checkPasswordStrength()">
+                        <i class="far fa-eye toggle-password" onclick="togglePassword('signupPassword')"></i>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-bar-fill" id="strengthBar"></div>
+                        </div>
+                        <span class="strength-text" id="strengthText" data-i18n="auth.enter-password">Enter a password</span>
+                    </div>
+                    <div class="error-message" id="signupPasswordError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="auth.confirm-password">Confirm password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signupConfirmPassword" placeholder="Confirm password" required>
+                        <i class="far fa-eye toggle-password" onclick="togglePassword('signupConfirmPassword')"></i>
+                    </div>
+                    <div class="error-message" id="confirmPasswordError"></div>
+                </div>
+
+                <div class="terms">
+                    <input type="checkbox" id="termsCheckbox" required>
+                    <label data-i18n="auth.terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                </div>
+
+                <button type="submit" class="auth-btn" data-i18n="auth.create-account">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="main-container" id="mainContainer">
+        <!-- Header with Profile Menu -->
+        <div class="app-header">
+            <div class="app-logo">FYNANZ</div>
+            
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <div class="profile-trigger" onclick="toggleProfileMenu()">
+                    <div class="avatar" id="userAvatar">
+                        <span id="avatarText">JS</span>
+                    </div>
+                    <div class="profile-info">
+                        <h4 id="userName">John Smith</h4>
+                        <p id="userEmail">john@example.com</p>
+                    </div>
+                    <i class="fas fa-chevron-down" id="profileArrow"></i>
+                </div>
+
+                <!-- Profile Dropdown Menu -->
+                <div class="profile-menu" id="profileMenu">
+                    <div class="menu-header">
+                        <div class="menu-avatar" id="menuAvatar">
+                            <span id="menuAvatarText">JS</span>
+                        </div>
+                        <div class="menu-info">
+                            <h3 id="menuName">John Smith</h3>
+                            <p id="menuEmail">john@example.com</p>
+                        </div>
+                    </div>
+
+                    <div class="menu-section">
+                        <div class="menu-section-title" data-i18n="menu.account">Account Settings</div>
+                        <div class="menu-item" onclick="showProfileSettings()">
+                            <i class="fas fa-user-circle"></i>
+                            <span data-i18n="menu.profile">Profile Information</span>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 12px;"></i>
+                        </div>
+                    </div>
+
+                    <div class="menu-divider"></div>
+
+                    <div class="menu-section">
+                        <div class="menu-section-title" data-i18n="menu.preferences">Preferences</div>
+                        <div class="menu-item" onclick="toggleTheme()">
+                            <i class="fas fa-palette"></i>
+                            <span data-i18n="menu.theme">Theme</span>
+                            <span class="value" id="themeValue">Dark</span>
+                        </div>
+                        <div class="menu-item" onclick="showCurrencySettings()">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span data-i18n="menu.currency">Currency</span>
+                            <span class="value" id="currencyValue">USD</span>
+                            <i class="fas fa-chevron-right" style="margin-left: 4px; font-size: 12px;"></i>
+                        </div>
+                        <div class="menu-item" onclick="showLanguageSettings()">
+                            <i class="fas fa-globe"></i>
+                            <span data-i18n="menu.language">Language</span>
+                            <span class="value" id="languageValue">English</span>
+                            <i class="fas fa-chevron-right" style="margin-left: 4px; font-size: 12px;"></i>
+                        </div>
+                    </div>
+
+                    <div class="menu-divider"></div>
+
+                    <div class="menu-item logout-menu-item" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span data-i18n="menu.signout">Sign Out</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Welcome Message -->
+        <div class="welcome-message" id="welcomeMessage">
+            <div class="welcome-message-left">
+                <div class="welcome-icon">
+                    <i class="fas fa-hand-wave"></i>
+                </div>
+                <div class="welcome-text">
+                    <h2 id="welcomeTitle">Welcome back!</h2>
+                    <p id="welcomeSubtitle">We're glad to see you again</p>
+                </div>
+            </div>
+            <div class="welcome-email-badge" id="welcomeEmail">
+                <i class="fas fa-envelope"></i>
+                <span>john@example.com</span>
+            </div>
+        </div>
+
+        <!-- Date Section -->
+        <div class="date-section">
+            <div class="date-display" id="autoDate">
+                <i class="far fa-calendar-alt"></i>
+                <span>Loading date...</span>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="message" id="appMessage"></div>
+
+        <!-- Calculator -->
+        <div class="calculator-section">
+            <div class="calculator-display" id="calcDisplay">0</div>
+            <div class="calculator-buttons">
+                <button class="calc-btn" onclick="appendToCalc('7')">7</button>
+                <button class="calc-btn" onclick="appendToCalc('8')">8</button>
+                <button class="calc-btn" onclick="appendToCalc('9')">9</button>
+                <button class="calc-btn operator" onclick="appendToCalc('/')"><i class="fas fa-divide"></i></button>
+                
+                <button class="calc-btn" onclick="appendToCalc('4')">4</button>
+                <button class="calc-btn" onclick="appendToCalc('5')">5</button>
+                <button class="calc-btn" onclick="appendToCalc('6')">6</button>
+                <button class="calc-btn operator" onclick="appendToCalc('*')"><i class="fas fa-times"></i></button>
+                
+                <button class="calc-btn" onclick="appendToCalc('1')">1</button>
+                <button class="calc-btn" onclick="appendToCalc('2')">2</button>
+                <button class="calc-btn" onclick="appendToCalc('3')">3</button>
+                <button class="calc-btn operator" onclick="appendToCalc('-')"><i class="fas fa-minus"></i></button>
+                
+                <button class="calc-btn" onclick="appendToCalc('0')">0</button>
+                <button class="calc-btn" onclick="appendToCalc('.')">.</button>
+                <button class="calc-btn" onclick="backspace()"><i class="fas fa-backspace"></i></button>
+                <button class="calc-btn clear" onclick="clearCalc()"><i class="fas fa-eraser"></i></button>
+                
+                <button class="calc-btn operator" onclick="appendToCalc('+')"><i class="fas fa-plus"></i></button>
+                <button class="calc-btn equals" onclick="calculateResult()"><i class="fas fa-equals"></i></button>
+                <button class="calc-btn" onclick="useCalcResult()"><i class="fas fa-check"></i> <span data-i18n="calculator.apply">Apply</span></button>
+            </div>
+        </div>
+
+        <!-- Input Form -->
+        <div class="input-section" id="inputForm">
+            <div class="form-group">
+                <label data-i18n="transaction.date">Date</label>
+                <div class="input-wrapper">
+                    <i class="far fa-calendar-alt"></i>
+                    <input type="text" id="date" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label data-i18n="transaction.day">Day</label>
+                <div class="input-wrapper">
+                    <i class="far fa-calendar-check"></i>
+                    <input type="text" id="day" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label data-i18n="transaction.month">Month</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-calendar-alt"></i>
+                    <input type="text" id="month" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label data-i18n="transaction.year">Year</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-calendar"></i>
+                    <input type="text" id="year" readonly>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label data-i18n="transaction.type">Transaction type</label>
+                <div class="type-selector">
+                    <button class="type-btn income active" onclick="setType('income')">
+                        <i class="fas fa-arrow-up"></i> <span data-i18n="transaction.income">Income</span>
+                    </button>
+                    <button class="type-btn expense" onclick="setType('expense')">
+                        <i class="fas fa-arrow-down"></i> <span data-i18n="transaction.expense">Expense</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label data-i18n="transaction.description">Description</label>
+                <div class="input-wrapper">
+                    <i class="far fa-pencil"></i>
+                    <input type="text" id="description" placeholder="e.g., Salary, Rent, Groceries">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label data-i18n="transaction.amount">Amount</label>
+                <div class="input-wrapper number-input">
+                    <i class="fas fa-dollar-sign" id="currencyIcon"></i>
+                    <input type="number" id="amount" placeholder="0.00" step="0.01" min="0">
+                    <div class="number-controls">
+                        <button onclick="incrementAmount()" title="Increase"><i class="fas fa-chevron-up"></i></button>
+                        <button onclick="decrementAmount()" title="Decrease"><i class="fas fa-chevron-down"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="createRecord()">
+                    <i class="fas fa-plus-circle"></i> <span data-i18n="transaction.add">Add Transaction</span>
+                </button>
+                <button class="btn btn-success" onclick="updateRecord()" id="updateBtn" style="display: none;">
+                    <i class="fas fa-save"></i> <span data-i18n="transaction.update">Update</span>
+                </button>
+                <button class="btn btn-warning" onclick="cancelEdit()" id="cancelBtn" style="display: none;">
+                    <i class="fas fa-times"></i> <span data-i18n="transaction.cancel">Cancel</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="card-icon income">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="card-content">
+                    <h3 data-i18n="summary.income">Total Income</h3>
+                    <div class="amount" id="totalIncome">$0.00</div>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="card-icon expense">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="card-content">
+                    <h3 data-i18n="summary.expense">Total Expenses</h3>
+                    <div class="amount" id="totalExpense">$0.00</div>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="card-icon balance">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="card-content">
+                    <h3 data-i18n="summary.balance">Net Balance</h3>
+                    <div class="amount" id="netBalance">$0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <select class="filter-select" id="typeFilter" onchange="filterRecords()">
+                <option value="all" data-i18n="filter.all">All transactions</option>
+                <option value="income" data-i18n="filter.income">Income only</option>
+                <option value="expense" data-i18n="filter.expense">Expenses only</option>
+            </select>
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search transactions..." onkeyup="filterRecords()">
+            </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th data-i18n="table.date">Date</th>
+                        <th data-i18n="table.day">Day</th>
+                        <th data-i18n="table.month">Month</th>
+                        <th data-i18n="table.year">Year</th>
+                        <th data-i18n="table.type">Type</th>
+                        <th data-i18n="table.description">Description</th>
+                        <th data-i18n="table.amount">Amount</th>
+                        <th data-i18n="table.actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 48px; color: var(--text-muted);">
+                            <i class="fas fa-receipt" style="font-size: 32px; margin-bottom: 16px; display: block;"></i>
+                            <span data-i18n="table.empty">No transactions yet</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Profile Settings Modal -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="profile.title">Profile Information</h2>
+                <button class="modal-close" onclick="closeModal('profileModal')">&times;</button>
+            </div>
+            <div class="profile-edit-form">
+                <div class="avatar-upload">
+                    <div class="avatar-preview" id="profileAvatar" onclick="document.getElementById('avatarInput').click()">
+                        <span id="profileAvatarText">JS</span>
+                    </div>
+                    <button class="upload-btn" onclick="document.getElementById('avatarInput').click()">
+                        <i class="fas fa-camera"></i> <span data-i18n="profile.change-photo">Change Photo</span>
+                    </button>
+                    <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="openCropModal(event)">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label data-i18n="profile.first-name">First Name</label>
+                        <div class="input-wrapper">
+                            <i class="far fa-user"></i>
+                            <input type="text" id="profileFirstName" placeholder="John">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="profile.last-name">Last Name</label>
+                        <div class="input-wrapper">
+                            <i class="far fa-user"></i>
+                            <input type="text" id="profileLastName" placeholder="Smith">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="profile.email">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-envelope"></i>
+                        <input type="email" id="profileEmail" placeholder="john@example.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="profile.bio">Bio</label>
+                    <div class="input-wrapper">
+                        <i class="far fa-comment"></i>
+                        <textarea id="profileBio" placeholder="Tell us about yourself..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="profile.phone">Phone Number</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="profilePhone" placeholder="+1 234 567 890">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label data-i18n="profile.country">Country</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-globe"></i>
+                            <input type="text" id="profileCountry" placeholder="United States">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="profile.city">City</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-city"></i>
+                            <input type="text" id="profileCity" placeholder="New York">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="save-btn" onclick="saveProfile()">
+                    <i class="fas fa-save"></i> <span data-i18n="profile.save">Save Changes</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crop Modal -->
+    <div class="modal" id="cropModal">
+        <div class="modal-content cropper-modal">
+            <div class="modal-header">
+                <h2 data-i18n="crop.title">Crop Image</h2>
+                <button class="modal-close" onclick="closeCropModal()">&times;</button>
+            </div>
+            <div class="cropper-container">
+                <img id="cropImage" style="max-width: 100%;">
+            </div>
+            <div class="cropper-preview">
+                <div class="preview-circle">
+                    <img id="preview" src="" alt="Preview">
+                </div>
+            </div>
+            <div class="cropper-actions">
+                <button class="cropper-btn cancel" onclick="closeCropModal()">Cancel</button>
+                <button class="cropper-btn save" onclick="cropAndSave()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Currency Settings Modal -->
+    <div class="modal" id="currencyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="currency.title">Select Currency</h2>
+                <button class="modal-close" onclick="closeModal('currencyModal')">&times;</button>
+            </div>
+            <div class="option-list" id="currencyList">
+                <!-- Currency options will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Settings Modal -->
+    <div class="modal" id="languageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="language.title">Select Language</h2>
+                <button class="modal-close" onclick="closeModal('languageModal')">&times;</button>
+            </div>
+            <div class="option-list" id="languageList">
+                <!-- Language options will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // LOCAL DATABASE SYSTEM - No external services needed
+        // All data is stored in the browser's localStorage
+        // Perfect for personal use and testing
+        // ============================================
+
+        // User Database - stored in localStorage
+        let users = JSON.parse(localStorage.getItem('fynanz_users')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('fynanz_currentUser')) || null;
+        let records = [];
+        let currentEditId = null;
+        let calcValue = '';
+        let currentType = 'income';
+
+        // Theme Management
+        let currentTheme = localStorage.getItem('fynanz_theme') || 'dark';
+        let currentCurrency = localStorage.getItem('fynanz_currency') || 'USD';
+        let currentLanguage = localStorage.getItem('fynanz_language') || 'en';
+
+        // Cropper instance
+        let cropper = null;
+        let currentFile = null;
+
+        // Currency Data
+        const currencies = [
+            { code: 'USD', symbol: '$', name: 'US Dollar', flag: '🇺🇸' },
+            { code: 'EUR', symbol: '€', name: 'Euro', flag: '🇪🇺' },
+            { code: 'GBP', symbol: '£', name: 'British Pound', flag: '🇬🇧' },
+            { code: 'JPY', symbol: '¥', name: 'Japanese Yen', flag: '🇯🇵' },
+            { code: 'CNY', symbol: '¥', name: 'Chinese Yuan', flag: '🇨🇳' },
+            { code: 'KRW', symbol: '₩', name: 'South Korean Won', flag: '🇰🇷' },
+            { code: 'IDR', symbol: 'Rp', name: 'Indonesian Rupiah', flag: '🇮🇩' },
+            { code: 'RUB', symbol: '₽', name: 'Russian Ruble', flag: '🇷🇺' }
+        ];
+
+        // Language Data
+        const languages = [
+            { code: 'en', name: 'English', native: 'English', flag: '🇬🇧' },
+            { code: 'id', name: 'Indonesian', native: 'Bahasa Indonesia', flag: '🇮🇩' },
+            { code: 'ru', name: 'Russian', native: 'Русский', flag: '🇷🇺' },
+            { code: 'ja', name: 'Japanese', native: '日本語', flag: '🇯🇵' },
+            { code: 'zh', name: 'Chinese', native: '中文', flag: '🇨🇳' },
+            { code: 'ko', name: 'Korean', native: '한국어', flag: '🇰🇷' }
+        ];
+
+        // Translations
+        const translations = {
+            en: {
+                'auth.subtitle': 'Premium financial intelligence',
+                'auth.signin': 'Sign In',
+                'auth.signup': 'Create Account',
+                'auth.email': 'Email address',
+                'auth.password': 'Password',
+                'auth.continue-with': 'Continue with',
+                'auth.fullname': 'Full name',
+                'auth.confirm-password': 'Confirm password',
+                'auth.enter-password': 'Enter a password',
+                'auth.terms': 'I agree to the Terms of Service and Privacy Policy',
+                'auth.create-account': 'Create Account',
+                'menu.account': 'Account Settings',
+                'menu.profile': 'Profile Information',
+                'menu.preferences': 'Preferences',
+                'menu.theme': 'Theme',
+                'menu.currency': 'Currency',
+                'menu.language': 'Language',
+                'menu.signout': 'Sign Out',
+                'calculator.apply': 'Apply',
+                'transaction.date': 'Date',
+                'transaction.day': 'Day',
+                'transaction.month': 'Month',
+                'transaction.year': 'Year',
+                'transaction.type': 'Transaction type',
+                'transaction.income': 'Income',
+                'transaction.expense': 'Expense',
+                'transaction.description': 'Description',
+                'transaction.amount': 'Amount',
+                'transaction.add': 'Add Transaction',
+                'transaction.update': 'Update',
+                'transaction.cancel': 'Cancel',
+                'summary.income': 'Total Income',
+                'summary.expense': 'Total Expenses',
+                'summary.balance': 'Net Balance',
+                'filter.all': 'All transactions',
+                'filter.income': 'Income only',
+                'filter.expense': 'Expenses only',
+                'table.date': 'Date',
+                'table.day': 'Day',
+                'table.month': 'Month',
+                'table.year': 'Year',
+                'table.type': 'Type',
+                'table.description': 'Description',
+                'table.amount': 'Amount',
+                'table.actions': 'Actions',
+                'table.empty': 'No transactions yet',
+                'profile.title': 'Profile Information',
+                'profile.change-photo': 'Change Photo',
+                'profile.first-name': 'First Name',
+                'profile.last-name': 'Last Name',
+                'profile.email': 'Email Address',
+                'profile.bio': 'Bio',
+                'profile.phone': 'Phone Number',
+                'profile.country': 'Country',
+                'profile.city': 'City',
+                'profile.save': 'Save Changes',
+                'currency.title': 'Select Currency',
+                'language.title': 'Select Language',
+                'crop.title': 'Crop Image',
+                'theme.dark': 'Dark',
+                'theme.light': 'Light'
+            },
+            id: {
+                'auth.subtitle': 'Intelijen keuangan premium',
+                'auth.signin': 'Masuk',
+                'auth.signup': 'Buat Akun',
+                'auth.email': 'Alamat email',
+                'auth.password': 'Kata sandi',
+                'auth.continue-with': 'Lanjutkan dengan',
+                'auth.fullname': 'Nama lengkap',
+                'auth.confirm-password': 'Konfirmasi kata sandi',
+                'auth.enter-password': 'Masukkan kata sandi',
+                'auth.terms': 'Saya setuju dengan Syarat Layanan dan Kebijakan Privasi',
+                'auth.create-account': 'Buat Akun',
+                'menu.account': 'Pengaturan Akun',
+                'menu.profile': 'Informasi Profil',
+                'menu.preferences': 'Preferensi',
+                'menu.theme': 'Tema',
+                'menu.currency': 'Mata Uang',
+                'menu.language': 'Bahasa',
+                'menu.signout': 'Keluar',
+                'calculator.apply': 'Terapkan',
+                'transaction.date': 'Tanggal',
+                'transaction.day': 'Hari',
+                'transaction.month': 'Bulan',
+                'transaction.year': 'Tahun',
+                'transaction.type': 'Jenis transaksi',
+                'transaction.income': 'Pemasukan',
+                'transaction.expense': 'Pengeluaran',
+                'transaction.description': 'Deskripsi',
+                'transaction.amount': 'Jumlah',
+                'transaction.add': 'Tambah Transaksi',
+                'transaction.update': 'Perbarui',
+                'transaction.cancel': 'Batal',
+                'summary.income': 'Total Pemasukan',
+                'summary.expense': 'Total Pengeluaran',
+                'summary.balance': 'Saldo Bersih',
+                'filter.all': 'Semua transaksi',
+                'filter.income': 'Pemasukan saja',
+                'filter.expense': 'Pengeluaran saja',
+                'table.date': 'Tanggal',
+                'table.day': 'Hari',
+                'table.month': 'Bulan',
+                'table.year': 'Tahun',
+                'table.type': 'Jenis',
+                'table.description': 'Deskripsi',
+                'table.amount': 'Jumlah',
+                'table.actions': 'Aksi',
+                'table.empty': 'Belum ada transaksi',
+                'profile.title': 'Informasi Profil',
+                'profile.change-photo': 'Ganti Foto',
+                'profile.first-name': 'Nama Depan',
+                'profile.last-name': 'Nama Belakang',
+                'profile.email': 'Alamat Email',
+                'profile.bio': 'Bio',
+                'profile.phone': 'Nomor Telepon',
+                'profile.country': 'Negara',
+                'profile.city': 'Kota',
+                'profile.save': 'Simpan Perubahan',
+                'currency.title': 'Pilih Mata Uang',
+                'language.title': 'Pilih Bahasa',
+                'crop.title': 'Pangkas Gambar',
+                'theme.dark': 'Gelap',
+                'theme.light': 'Terang'
+            },
+            ru: {
+                'auth.subtitle': 'Премиум финансовая аналитика',
+                'auth.signin': 'Войти',
+                'auth.signup': 'Создать аккаунт',
+                'auth.email': 'Электронная почта',
+                'auth.password': 'Пароль',
+                'auth.continue-with': 'Продолжить с',
+                'auth.fullname': 'Полное имя',
+                'auth.confirm-password': 'Подтвердите пароль',
+                'auth.enter-password': 'Введите пароль',
+                'auth.terms': 'Я согласен с Условиями обслуживания и Политикой конфиденциальности',
+                'auth.create-account': 'Создать аккаунт',
+                'menu.account': 'Настройки аккаунта',
+                'menu.profile': 'Информация профиля',
+                'menu.preferences': 'Настройки',
+                'menu.theme': 'Тема',
+                'menu.currency': 'Валюта',
+                'menu.language': 'Язык',
+                'menu.signout': 'Выйти',
+                'calculator.apply': 'Применить',
+                'transaction.date': 'Дата',
+                'transaction.day': 'День',
+                'transaction.month': 'Месяц',
+                'transaction.year': 'Год',
+                'transaction.type': 'Тип транзакции',
+                'transaction.income': 'Доход',
+                'transaction.expense': 'Расход',
+                'transaction.description': 'Описание',
+                'transaction.amount': 'Сумма',
+                'transaction.add': 'Добавить транзакцию',
+                'transaction.update': 'Обновить',
+                'transaction.cancel': 'Отмена',
+                'summary.income': 'Общий доход',
+                'summary.expense': 'Общие расходы',
+                'summary.balance': 'Чистый баланс',
+                'filter.all': 'Все транзакции',
+                'filter.income': 'Только доходы',
+                'filter.expense': 'Только расходы',
+                'table.date': 'Дата',
+                'table.day': 'День',
+                'table.month': 'Месяц',
+                'table.year': 'Год',
+                'table.type': 'Тип',
+                'table.description': 'Описание',
+                'table.amount': 'Сумма',
+                'table.actions': 'Действия',
+                'table.empty': 'Нет транзакций',
+                'profile.title': 'Информация профиля',
+                'profile.change-photo': 'Изменить фото',
+                'profile.first-name': 'Имя',
+                'profile.last-name': 'Фамилия',
+                'profile.email': 'Электронная почта',
+                'profile.bio': 'О себе',
+                'profile.phone': 'Номер телефона',
+                'profile.country': 'Страна',
+                'profile.city': 'Город',
+                'profile.save': 'Сохранить изменения',
+                'currency.title': 'Выберите валюту',
+                'language.title': 'Выберите язык',
+                'crop.title': 'Обрезать изображение',
+                'theme.dark': 'Темная',
+                'theme.light': 'Светлая'
+            },
+            ja: {
+                'auth.subtitle': 'プレミアム金融インテリジェンス',
+                'auth.signin': 'ログイン',
+                'auth.signup': 'アカウント作成',
+                'auth.email': 'メールアドレス',
+                'auth.password': 'パスワード',
+                'auth.continue-with': 'で続ける',
+                'auth.fullname': '氏名',
+                'auth.confirm-password': 'パスワード確認',
+                'auth.enter-password': 'パスワードを入力',
+                'auth.terms': '利用規約とプライバシーポリシーに同意します',
+                'auth.create-account': 'アカウント作成',
+                'menu.account': 'アカウント設定',
+                'menu.profile': 'プロフィール情報',
+                'menu.preferences': '設定',
+                'menu.theme': 'テーマ',
+                'menu.currency': '通貨',
+                'menu.language': '言語',
+                'menu.signout': 'ログアウト',
+                'calculator.apply': '適用',
+                'transaction.date': '日付',
+                'transaction.day': '曜日',
+                'transaction.month': '月',
+                'transaction.year': '年',
+                'transaction.type': '取引タイプ',
+                'transaction.income': '収入',
+                'transaction.expense': '支出',
+                'transaction.description': '説明',
+                'transaction.amount': '金額',
+                'transaction.add': '取引を追加',
+                'transaction.update': '更新',
+                'transaction.cancel': 'キャンセル',
+                'summary.income': '総収入',
+                'summary.expense': '総支出',
+                'summary.balance': '純残高',
+                'filter.all': 'すべての取引',
+                'filter.income': '収入のみ',
+                'filter.expense': '支出のみ',
+                'table.date': '日付',
+                'table.day': '曜日',
+                'table.month': '月',
+                'table.year': '年',
+                'table.type': 'タイプ',
+                'table.description': '説明',
+                'table.amount': '金額',
+                'table.actions': 'アクション',
+                'table.empty': '取引がありません',
+                'profile.title': 'プロフィール情報',
+                'profile.change-photo': '写真を変更',
+                'profile.first-name': '名',
+                'profile.last-name': '姓',
+                'profile.email': 'メールアドレス',
+                'profile.bio': '自己紹介',
+                'profile.phone': '電話番号',
+                'profile.country': '国',
+                'profile.city': '都市',
+                'profile.save': '変更を保存',
+                'currency.title': '通貨を選択',
+                'language.title': '言語を選択',
+                'crop.title': '画像を切り抜く',
+                'theme.dark': 'ダーク',
+                'theme.light': 'ライト'
+            },
+            zh: {
+                'auth.subtitle': '高级金融智能',
+                'auth.signin': '登录',
+                'auth.signup': '创建账户',
+                'auth.email': '电子邮件地址',
+                'auth.password': '密码',
+                'auth.continue-with': '继续使用',
+                'auth.fullname': '全名',
+                'auth.confirm-password': '确认密码',
+                'auth.enter-password': '输入密码',
+                'auth.terms': '我同意服务条款和隐私政策',
+                'auth.create-account': '创建账户',
+                'menu.account': '账户设置',
+                'menu.profile': '个人信息',
+                'menu.preferences': '偏好设置',
+                'menu.theme': '主题',
+                'menu.currency': '货币',
+                'menu.language': '语言',
+                'menu.signout': '退出登录',
+                'calculator.apply': '应用',
+                'transaction.date': '日期',
+                'transaction.day': '星期',
+                'transaction.month': '月份',
+                'transaction.year': '年份',
+                'transaction.type': '交易类型',
+                'transaction.income': '收入',
+                'transaction.expense': '支出',
+                'transaction.description': '描述',
+                'transaction.amount': '金额',
+                'transaction.add': '添加交易',
+                'transaction.update': '更新',
+                'transaction.cancel': '取消',
+                'summary.income': '总收入',
+                'summary.expense': '总支出',
+                'summary.balance': '净余额',
+                'filter.all': '所有交易',
+                'filter.income': '仅收入',
+                'filter.expense': '仅支出',
+                'table.date': '日期',
+                'table.day': '星期',
+                'table.month': '月份',
+                'table.year': '年份',
+                'table.type': '类型',
+                'table.description': '描述',
+                'table.amount': '金额',
+                'table.actions': '操作',
+                'table.empty': '暂无交易',
+                'profile.title': '个人信息',
+                'profile.change-photo': '更换照片',
+                'profile.first-name': '名',
+                'profile.last-name': '姓',
+                'profile.email': '电子邮件地址',
+                'profile.bio': '个人简介',
+                'profile.phone': '电话号码',
+                'profile.country': '国家',
+                'profile.city': '城市',
+                'profile.save': '保存更改',
+                'currency.title': '选择货币',
+                'language.title': '选择语言',
+                'crop.title': '裁剪图片',
+                'theme.dark': '深色',
+                'theme.light': '浅色'
+            },
+            ko: {
+                'auth.subtitle': '프리미엄 금융 인텔리전스',
+                'auth.signin': '로그인',
+                'auth.signup': '계정 만들기',
+                'auth.email': '이메일 주소',
+                'auth.password': '비밀번호',
+                'auth.continue-with': '계속하기',
+                'auth.fullname': '전체 이름',
+                'auth.confirm-password': '비밀번호 확인',
+                'auth.enter-password': '비밀번호 입력',
+                'auth.terms': '서비스 약관 및 개인정보 보호정책에 동의합니다',
+                'auth.create-account': '계정 만들기',
+                'menu.account': '계정 설정',
+                'menu.profile': '프로필 정보',
+                'menu.preferences': '환경 설정',
+                'menu.theme': '테마',
+                'menu.currency': '통화',
+                'menu.language': '언어',
+                'menu.signout': '로그아웃',
+                'calculator.apply': '적용',
+                'transaction.date': '날짜',
+                'transaction.day': '요일',
+                'transaction.month': '월',
+                'transaction.year': '년',
+                'transaction.type': '거래 유형',
+                'transaction.income': '수입',
+                'transaction.expense': '지출',
+                'transaction.description': '설명',
+                'transaction.amount': '금액',
+                'transaction.add': '거래 추가',
+                'transaction.update': '업데이트',
+                'transaction.cancel': '취소',
+                'summary.income': '총 수입',
+                'summary.expense': '총 지출',
+                'summary.balance': '순 잔액',
+                'filter.all': '모든 거래',
+                'filter.income': '수입만',
+                'filter.expense': '지출만',
+                'table.date': '날짜',
+                'table.day': '요일',
+                'table.month': '월',
+                'table.year': '년',
+                'table.type': '유형',
+                'table.description': '설명',
+                'table.amount': '금액',
+                'table.actions': '작업',
+                'table.empty': '거래 내역 없음',
+                'profile.title': '프로필 정보',
+                'profile.change-photo': '사진 변경',
+                'profile.first-name': '이름',
+                'profile.last-name': '성',
+                'profile.email': '이메일 주소',
+                'profile.bio': '자기소개',
+                'profile.phone': '전화번호',
+                'profile.country': '국가',
+                'profile.city': '도시',
+                'profile.save': '변경사항 저장',
+                'currency.title': '통화 선택',
+                'language.title': '언어 선택',
+                'crop.title': '이미지 자르기',
+                'theme.dark': '다크',
+                'theme.light': '라이트'
+            }
+        };
+
+        // Initialize theme
+        function initTheme() {
+            document.body.className = currentTheme + '-theme';
+            document.getElementById('themeValue').textContent = translations[currentLanguage][currentTheme === 'dark' ? 'theme.dark' : 'theme.light'];
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('fynanz_theme', currentTheme);
+            initTheme();
+            updateUILanguage();
+            showAppMessage('success', `Theme changed to ${currentTheme}`);
+            toggleProfileMenu();
+        }
+
+        // Amount increment/decrement functions
+        function incrementAmount() {
+            const amountInput = document.getElementById('amount');
+            let currentValue = parseFloat(amountInput.value) || 0;
+            const step = parseFloat(amountInput.step) || 0.01;
+            
+            currentValue = Math.round(currentValue * 100) / 100;
+            const newValue = currentValue + step;
+            
+            amountInput.value = newValue.toFixed(2);
+            
+            const event = new Event('change', { bubbles: true });
+            amountInput.dispatchEvent(event);
+        }
+
+        function decrementAmount() {
+            const amountInput = document.getElementById('amount');
+            let currentValue = parseFloat(amountInput.value) || 0;
+            const step = parseFloat(amountInput.step) || 0.01;
+            
+            currentValue = Math.round(currentValue * 100) / 100;
+            const newValue = currentValue - step;
+            
+            if (newValue >= 0) {
+                amountInput.value = newValue.toFixed(2);
+                const event = new Event('change', { bubbles: true });
+                amountInput.dispatchEvent(event);
+            }
+        }
+
+        // Add keyboard support for the number input
+        document.getElementById('amount')?.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                incrementAmount();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                decrementAmount();
+            }
+        });
+
+        // Cropper Functions
+        function openCropModal(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            currentFile = file;
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const image = document.getElementById('cropImage');
+                image.src = e.target.result;
+                
+                document.getElementById('cropModal').classList.add('active');
+                
+                if (cropper) {
+                    cropper.destroy();
+                }
+                
+                cropper = new Cropper(image, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    cropBoxResizable: true,
+                    cropBoxMovable: true,
+                    preview: '.preview-circle',
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    background: false
+                });
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function closeCropModal() {
+            document.getElementById('cropModal').classList.remove('active');
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+        }
+
+        function cropAndSave() {
+            if (!cropper) return;
+
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+            });
+
+            const croppedImage = canvas.toDataURL('image/jpeg', 0.9);
+            
+            // Update all avatar elements
+            document.getElementById('profileAvatar').innerHTML = `<img src="${croppedImage}" alt="Avatar">`;
+            document.getElementById('userAvatar').innerHTML = `<img src="${croppedImage}" alt="Avatar">`;
+            document.getElementById('menuAvatar').innerHTML = `<img src="${croppedImage}" alt="Avatar">`;
+            
+            // Hide the text spans
+            document.getElementById('avatarText').style.display = 'none';
+            document.getElementById('menuAvatarText').style.display = 'none';
+            document.getElementById('profileAvatarText').style.display = 'none';
+            
+            if (currentUser) {
+                currentUser.photoURL = croppedImage;
+                localStorage.setItem('fynanz_currentUser', JSON.stringify(currentUser));
+                
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    users[userIndex].photoURL = croppedImage;
+                    localStorage.setItem('fynanz_users', JSON.stringify(users));
+                }
+            }
+
+            closeCropModal();
+            showAppMessage('success', 'Profile picture updated successfully');
+        }
+
+        // Currency functions
+        function showCurrencySettings() {
+            const currencyList = document.getElementById('currencyList');
+            currencyList.innerHTML = currencies.map(currency => `
+                <div class="option-item ${currency.code === currentCurrency ? 'selected' : ''}" onclick="selectCurrency('${currency.code}')">
+                    <span class="flag">${currency.flag}</span>
+                    <span class="currency-name">${currency.name} (${currency.code})</span>
+                    <span class="currency-symbol">${currency.symbol}</span>
+                    <i class="fas fa-check check"></i>
+                </div>
+            `).join('');
+            openModal('currencyModal');
+            toggleProfileMenu();
+        }
+
+        function selectCurrency(currencyCode) {
+            currentCurrency = currencyCode;
+            localStorage.setItem('fynanz_currency', currencyCode);
+            const currency = currencies.find(c => c.code === currencyCode);
+            document.getElementById('currencyValue').textContent = currencyCode;
+            document.getElementById('currencyIcon').className = currency.symbol === '¥' ? 'fas fa-yen-sign' : 'fas fa-dollar-sign';
+            closeModal('currencyModal');
+            updateSummary();
+            renderTable();
+            showAppMessage('success', `Currency changed to ${currency.name}`);
+        }
+
+        // Language functions
+        function showLanguageSettings() {
+            const languageList = document.getElementById('languageList');
+            languageList.innerHTML = languages.map(lang => `
+                <div class="option-item ${lang.code === currentLanguage ? 'selected' : ''}" onclick="selectLanguage('${lang.code}')">
+                    <span class="flag">${lang.flag}</span>
+                    <span class="language-name">${lang.name} <span class="language-native">(${lang.native})</span></span>
+                    <i class="fas fa-check check"></i>
+                </div>
+            `).join('');
+            openModal('languageModal');
+            toggleProfileMenu();
+        }
+
+        function selectLanguage(langCode) {
+            currentLanguage = langCode;
+            localStorage.setItem('fynanz_language', langCode);
+            document.getElementById('languageValue').textContent = languages.find(l => l.code === langCode).name;
+            closeModal('languageModal');
+            updateUILanguage();
+            showAppMessage('success', `Language changed to ${languages.find(l => l.code === langCode).name}`);
+        }
+
+        // Update UI language
+        function updateUILanguage() {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLanguage] && translations[currentLanguage][key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = translations[currentLanguage][key];
+                    } else {
+                        el.textContent = translations[currentLanguage][key];
+                    }
+                }
+            });
+            
+            document.getElementById('themeValue').textContent = translations[currentLanguage][currentTheme === 'dark' ? 'theme.dark' : 'theme.light'];
+            document.getElementById('languageValue').textContent = languages.find(l => l.code === currentLanguage).name;
+            
+            // Update welcome message if user is logged in
+            if (currentUser) {
+                updateWelcomeMessage();
+            }
+        }
+
+        // Profile functions
+        function showProfileSettings() {
+            if (currentUser) {
+                const nameParts = currentUser.name.split(' ');
+                document.getElementById('profileFirstName').value = nameParts[0] || '';
+                document.getElementById('profileLastName').value = nameParts.slice(1).join(' ') || '';
+                document.getElementById('profileEmail').value = currentUser.email;
+                
+                if (currentUser.photoURL) {
+                    document.getElementById('profileAvatar').innerHTML = `<img src="${currentUser.photoURL}" alt="Avatar">`;
+                    document.getElementById('profileAvatarText').style.display = 'none';
+                } else {
+                    const initials = (nameParts[0]?.[0] || '') + (nameParts[1]?.[0] || '');
+                    document.getElementById('profileAvatar').innerHTML = `<span id="profileAvatarText">${initials}</span>`;
+                }
+            }
+            openModal('profileModal');
+            toggleProfileMenu();
+        }
+
+        function saveProfile() {
+            const firstName = document.getElementById('profileFirstName').value;
+            const lastName = document.getElementById('profileLastName').value;
+            const email = document.getElementById('profileEmail').value;
+            const bio = document.getElementById('profileBio').value;
+            const phone = document.getElementById('profilePhone').value;
+            const country = document.getElementById('profileCountry').value;
+            const city = document.getElementById('profileCity').value;
+
+            if (currentUser) {
+                currentUser.name = `${firstName} ${lastName}`.trim();
+                currentUser.email = email;
+                
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                document.getElementById('menuName').textContent = currentUser.name;
+                document.getElementById('menuEmail').textContent = currentUser.email;
+                
+                updateWelcomeMessage();
+                
+                if (!currentUser.photoURL) {
+                    const initials = (firstName[0] || '') + (lastName[0] || '');
+                    document.getElementById('userAvatar').innerHTML = `<span id="avatarText">${initials}</span>`;
+                    document.getElementById('menuAvatar').innerHTML = `<span id="menuAvatarText">${initials}</span>`;
+                }
+
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    users[userIndex] = { ...users[userIndex], ...currentUser };
+                    localStorage.setItem('fynanz_users', JSON.stringify(users));
+                }
+                localStorage.setItem('fynanz_currentUser', JSON.stringify(currentUser));
+            }
+
+            closeModal('profileModal');
+            showAppMessage('success', 'Profile updated successfully');
+        }
+
+        function updateWelcomeMessage() {
+            if (currentUser) {
+                const hour = new Date().getHours();
+                let greeting = '';
+                
+                if (hour < 12) {
+                    greeting = 'Good morning';
+                } else if (hour < 18) {
+                    greeting = 'Good afternoon';
+                } else {
+                    greeting = 'Good evening';
+                }
+                
+                document.getElementById('welcomeTitle').textContent = `${greeting}, ${currentUser.name.split(' ')[0]}!`;
+                document.getElementById('welcomeSubtitle').textContent = translations[currentLanguage]['auth.subtitle'] || 'Premium financial intelligence';
+                document.getElementById('welcomeEmail').innerHTML = `<i class="fas fa-envelope"></i><span>${currentUser.email}</span>`;
+            }
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Initialize - check if user is logged in
+        if (currentUser) {
+            const user = users.find(u => u.id === currentUser.id);
+            if (user) {
+                records = user.records || [];
+                showMainApp();
+            }
+        }
+
+        // Initialize theme
+        initTheme();
+        initCurrency();
+        initLanguage();
+
+        function initCurrency() {
+            const currency = currencies.find(c => c.code === currentCurrency);
+            document.getElementById('currencyValue').textContent = currentCurrency;
+            document.getElementById('currencyIcon').className = currency.symbol === '¥' ? 'fas fa-yen-sign' : 'fas fa-dollar-sign';
+        }
+
+        function initLanguage() {
+            document.getElementById('languageValue').textContent = languages.find(l => l.code === currentLanguage).name;
+            updateUILanguage();
+        }
+
+        // Toggle Profile Menu
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profileMenu');
+            const arrow = document.getElementById('profileArrow');
+            menu.classList.toggle('active');
+            arrow.style.transform = menu.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0)';
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('profileMenu');
+            const trigger = document.querySelector('.profile-trigger');
+            if (menu && trigger && !trigger.contains(event.target) && !menu.contains(event.target)) {
+                menu.classList.remove('active');
+                document.getElementById('profileArrow').style.transform = 'rotate(0)';
+            }
+        });
+
+        // Toggle forms
+        function showLoginForm() {
+            document.getElementById('loginForm').classList.add('active');
+            document.getElementById('signupForm').classList.remove('active');
+            document.getElementById('loginToggleBtn').classList.add('active');
+            document.getElementById('signupToggleBtn').classList.remove('active');
+            clearMessages();
+        }
+
+        function showSignupForm() {
+            document.getElementById('signupForm').classList.add('active');
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('signupToggleBtn').classList.add('active');
+            document.getElementById('loginToggleBtn').classList.remove('active');
+            clearMessages();
+        }
+
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.type = field.type === 'password' ? 'text' : 'password';
+        }
+
+        // Password strength
+        function checkPasswordStrength() {
+            const password = document.getElementById('signupPassword').value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]+/)) strength++;
+            if (password.match(/[A-Z]+/)) strength++;
+            if (password.match(/[0-9]+/)) strength++;
+            if (password.match(/[$@#&!]+/)) strength++;
+            
+            const width = (strength * 20);
+            strengthBar.style.width = width + '%';
+            
+            const texts = ['Enter a password', 'Weak', 'Fair', 'Good', 'Strong', 'Very strong'];
+            strengthText.textContent = texts[strength];
+        }
+
+        // Signup - Create account with email and password
+        function handleSignup(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            
+            // Validation
+            if (name.length < 2) {
+                showError('signupNameError', 'Name must be at least 2 characters');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showError('signupEmailError', 'Please enter a valid email');
+                return;
+            }
+            
+            if (users.some(u => u.email === email)) {
+                showError('signupEmailError', 'Email already registered');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showError('signupPasswordError', 'Password must be at least 8 characters');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('confirmPasswordError', 'Passwords do not match');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now().toString(),
+                name: name,
+                email: email,
+                password: btoa(password), // Simple encryption for demo
+                photoURL: null,
+                createdAt: new Date().toISOString(),
+                records: []
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('fynanz_users', JSON.stringify(users));
+            
+            // Auto login after signup
+            currentUser = {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                photoURL: null
+            };
+            
+            localStorage.setItem('fynanz_currentUser', JSON.stringify(currentUser));
+            
+            records = [];
+            showMainApp();
+            showAppMessage('success', 'Account created successfully!');
+        }
+
+        // Login with email and password
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            
+            // Find user in local database
+            const user = users.find(u => u.email === email && u.password === btoa(password));
+            
+            if (user) {
+                currentUser = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    photoURL: user.photoURL
+                };
+                
+                localStorage.setItem('fynanz_currentUser', JSON.stringify(currentUser));
+                
+                records = user.records || [];
+                showMainApp();
+                showAppMessage('success', 'Login successful!');
+            } else {
+                showError('loginEmailError', 'Invalid email or password');
+                showError('loginPasswordError', 'Invalid email or password');
+            }
+        }
+
+        // Logout
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('fynanz_currentUser');
+            
+            document.getElementById('authContainer').style.display = 'block';
+            document.getElementById('mainContainer').style.display = 'none';
+            
+            document.getElementById('loginForm').reset();
+            document.getElementById('signupForm').reset();
+            showLoginForm();
+        }
+
+        // Set transaction type
+        function setType(type) {
+            currentType = type;
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (type === 'income') {
+                document.querySelector('.type-btn.income').classList.add('active');
+            } else {
+                document.querySelector('.type-btn.expense').classList.add('active');
+            }
+        }
+
+        // Show main app
+        function showMainApp() {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('userEmail').textContent = currentUser.email;
+                document.getElementById('menuName').textContent = currentUser.name;
+                document.getElementById('menuEmail').textContent = currentUser.email;
+                
+                updateWelcomeMessage();
+                
+                if (currentUser.photoURL) {
+                    document.getElementById('userAvatar').innerHTML = `<img src="${currentUser.photoURL}" alt="Avatar">`;
+                    document.getElementById('menuAvatar').innerHTML = `<img src="${currentUser.photoURL}" alt="Avatar">`;
+                    document.getElementById('avatarText').style.display = 'none';
+                    document.getElementById('menuAvatarText').style.display = 'none';
+                } else {
+                    const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    document.getElementById('userAvatar').innerHTML = `<span id="avatarText">${initials.slice(0, 2)}</span>`;
+                    document.getElementById('menuAvatar').innerHTML = `<span id="menuAvatarText">${initials.slice(0, 2)}</span>`;
+                }
+            }
+            
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            renderTable();
+            updateSummary();
+        }
+
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            
+            document.getElementById('autoDate').innerHTML = `
+                <i class="far fa-calendar-alt"></i>
+                <span>${now.toLocaleDateString('en-US', options)}</span>
+                <strong>${now.toLocaleTimeString('en-US')}</strong>
+            `;
+            
+            document.getElementById('date').value = now.toLocaleDateString('en-US');
+            document.getElementById('day').value = now.toLocaleDateString('en-US', { weekday: 'long' });
+            document.getElementById('month').value = now.toLocaleDateString('en-US', { month: 'long' });
+            document.getElementById('year').value = now.getFullYear();
+        }
+
+        // Calculator functions
+        function appendToCalc(value) {
+            calcValue += value;
+            document.getElementById('calcDisplay').innerText = calcValue || '0';
+        }
+
+        function clearCalc() {
+            calcValue = '';
+            document.getElementById('calcDisplay').innerText = '0';
+        }
+
+        function backspace() {
+            calcValue = calcValue.slice(0, -1);
+            document.getElementById('calcDisplay').innerText = calcValue || '0';
+        }
+
+        function calculateResult() {
+            try {
+                calcValue = eval(calcValue).toString();
+                document.getElementById('calcDisplay').innerText = calcValue;
+            } catch {
+                document.getElementById('calcDisplay').innerText = 'Error';
+                calcValue = '';
+            }
+        }
+
+        function useCalcResult() {
+            if (calcValue && !isNaN(calcValue)) {
+                document.getElementById('amount').value = parseFloat(calcValue).toFixed(2);
+                showAppMessage('success', 'Calculator value applied');
+            }
+        }
+
+        // CRUD Operations
+        function createRecord() {
+            const description = document.getElementById('description').value.trim();
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            if (!description) {
+                showAppMessage('error', 'Please enter a description');
+                return;
+            }
+            
+            if (!amount) {
+                showAppMessage('error', 'Please enter an amount');
+                return;
+            }
+
+            const record = {
+                id: Date.now(),
+                date: document.getElementById('date').value,
+                day: document.getElementById('day').value,
+                month: document.getElementById('month').value,
+                year: document.getElementById('year').value,
+                type: currentType,
+                description: description,
+                amount: amount
+            };
+
+            records.push(record);
+            saveRecords();
+            renderTable();
+            updateSummary();
+            clearForm();
+            showAppMessage('success', 'Transaction added successfully');
+        }
+
+        function updateRecord() {
+            if (!currentEditId) return;
+
+            const description = document.getElementById('description').value.trim();
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            if (!description || !amount) {
+                showAppMessage('error', 'Please fill all fields');
+                return;
+            }
+
+            const index = records.findIndex(r => r.id === currentEditId);
+            if (index !== -1) {
+                records[index] = {
+                    ...records[index],
+                    type: currentType,
+                    description: description,
+                    amount: amount
+                };
+                saveRecords();
+                renderTable();
+                updateSummary();
+                cancelEdit();
+                showAppMessage('success', 'Transaction updated');
+            }
+        }
+
+        function deleteRecord(id) {
+            if (confirm('Delete this transaction?')) {
+                records = records.filter(record => record.id !== id);
+                saveRecords();
+                renderTable();
+                updateSummary();
+                showAppMessage('success', 'Transaction deleted');
+            }
+        }
+
+        function editRecord(id) {
+            const record = records.find(r => r.id === id);
+            if (record) {
+                setType(record.type);
+                document.getElementById('description').value = record.description;
+                document.getElementById('amount').value = record.amount;
+                
+                currentEditId = id;
+                document.getElementById('updateBtn').style.display = 'block';
+                document.querySelector('.btn-primary').style.display = 'none';
+                document.getElementById('cancelBtn').style.display = 'block';
+            }
+        }
+
+        function cancelEdit() {
+            clearForm();
+            currentEditId = null;
+            document.getElementById('updateBtn').style.display = 'none';
+            document.querySelector('.btn-primary').style.display = 'block';
+            document.getElementById('cancelBtn').style.display = 'none';
+            setType('income');
+        }
+
+        function clearForm() {
+            document.getElementById('description').value = '';
+            document.getElementById('amount').value = '';
+        }
+
+        function saveRecords() {
+            if (currentUser) {
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    users[userIndex].records = records;
+                    localStorage.setItem('fynanz_users', JSON.stringify(users));
+                }
+            }
+        }
+
+        function updateSummary() {
+            const currency = currencies.find(c => c.code === currentCurrency);
+            const symbol = currency ? currency.symbol : '$';
+            
+            const totalIncome = records
+                .filter(r => r.type === 'income')
+                .reduce((sum, r) => sum + r.amount, 0);
+            
+            const totalExpense = records
+                .filter(r => r.type === 'expense')
+                .reduce((sum, r) => sum + r.amount, 0);
+            
+            const netBalance = totalIncome - totalExpense;
+
+            document.getElementById('totalIncome').innerHTML = `${symbol}${totalIncome.toFixed(2)}`;
+            document.getElementById('totalExpense').innerHTML = `${symbol}${totalExpense.toFixed(2)}`;
+            document.getElementById('netBalance').innerHTML = `${symbol}${netBalance.toFixed(2)}`;
+        }
+
+        function filterRecords() {
+            renderTable();
+        }
+
+        function renderTable() {
+            const typeFilter = document.getElementById('typeFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const currency = currencies.find(c => c.code === currentCurrency);
+            const symbol = currency ? currency.symbol : '$';
+            
+            let filteredRecords = records;
+            
+            if (typeFilter !== 'all') {
+                filteredRecords = filteredRecords.filter(r => r.type === typeFilter);
+            }
+            
+            if (searchTerm) {
+                filteredRecords = filteredRecords.filter(r => 
+                    r.description.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            const tableBody = document.getElementById('tableBody');
+            
+            if (filteredRecords.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 48px; color: var(--text-muted);">
+                            <i class="fas fa-receipt" style="font-size: 32px; margin-bottom: 16px; display: block;"></i>
+                            ${translations[currentLanguage]['table.empty']}
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = filteredRecords
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(record => `
+                    <tr>
+                        <td>${record.date}</td>
+                        <td>${record.day}</td>
+                        <td>${record.month}</td>
+                        <td>${record.year}</td>
+                        <td>
+                            <span class="type-badge ${record.type}">
+                                <i class="fas fa-${record.type === 'income' ? 'arrow-up' : 'arrow-down'}"></i>
+                                ${record.type === 'income' ? translations[currentLanguage]['transaction.income'] : translations[currentLanguage]['transaction.expense']}
+                            </span>
+                        </td>
+                        <td>${record.description}</td>
+                        <td><strong>${symbol}${record.amount.toFixed(2)}</strong></td>
+                        <td>
+                            <button class="action-btn edit-btn" onclick="editRecord(${record.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteRecord(${record.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+        }
+
+        // Helper functions
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function showAppMessage(type, message) {
+            const messageEl = document.getElementById('appMessage');
+            messageEl.className = `message ${type}`;
+            messageEl.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>${message}`;
+            
+            setTimeout(() => {
+                messageEl.className = 'message';
+            }, 3000);
+        }
+
+        function clearMessages() {
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+        }
+
+        // Initialize
+        updateDateTime();
+    </script>
+</body>
+</html>
